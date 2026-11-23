@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petualangan Dunia 3D - Game Developer SMK Plus Pelita Nusantara</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1 class="brand-title">Petualangan Dunia 3D</h1>
+      <span class="school-tag">Ujian Praktik Game Developer 3D &bull; SMK Plus Pelita Nusantara Bogor</span>
+    </div>
+    <div class="nav-controls">
+      <button id="btnToggleSound3D" class="btn-header" type="button" aria-label="Nyalakan atau matikan suara">🔊 Suara: Nyala</button>
+      <button id="btnHowToPlay3D" class="btn-header" type="button" aria-label="Buka petunjuk kontrol permainan">📖 Cara Bermain</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="game-viewport">
+      <canvas id="threeCanvas"></canvas>
+
+      <!-- In-Game 3D HUD Overlay -->
+      <div class="hud-overlay">
+        <div class="hud-pill">
+          <div class="health-bar-container">
+            <span>HP</span>
+            <div class="health-track">
+              <div id="healthFill" class="health-fill"></div>
+            </div>
+          </div>
+          <div id="hudCrystals" class="hud-item crystals">💎 0 / 12</div>
+          <div id="hudScore" class="hud-item score">⭐ 0</div>
+        </div>
+        <div class="hud-pill">
+          <div id="hudLevel" class="hud-item level">Level 1: Dataran Hijau Nusantara</div>
+        </div>
+      </div>
+
+      <!-- Main Menu Overlay -->
+      <div id="screenMenu3D" class="overlay-screen">
+        <div class="overlay-box">
+          <h2 class="overlay-title">Petualangan Dunia 3D</h2>
+          <p class="overlay-subtitle">Jelajahi pulau terapung, kumpulkan kristal berkilau, hindari rintangan, dan capai kuil finis.</p>
+          <div class="button-stack">
+            <button id="btnStart3D" class="btn-primary" type="button">Mulai Petualangan 3D</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pause Menu Overlay -->
+      <div id="screenPause3D" class="overlay-screen hidden">
+        <div class="overlay-box">
+          <h2 class="overlay-title">Permainan Dijeda</h2>
+          <p class="overlay-subtitle">Gunakan menu di bawah untuk melanjutkan atau mengatur ulang.</p>
+          <div class="button-stack">
+            <button id="btnResume3D" class="btn-primary" type="button">Lanjutkan Permainan</button>
+            <button id="btnRestartPause3D" class="btn-secondary" type="button">Mulai Ulang Level Ini</button>
+            <button id="btnMenuPause3D" class="btn-secondary" type="button">Kembali ke Menu Utama</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over Overlay -->
+      <div id="screenGameOver3D" class="overlay-screen hidden">
+        <div class="overlay-box">
+          <h2 class="overlay-title lose">Permainan Berakhir</h2>
+          <p class="overlay-subtitle">Karakter terjatuh ke jurang hampa atau kehabisan energi HP.</p>
+          <div class="stats-card">
+            <div class="stat-row">
+              <span>Skor Akhir:</span>
+              <span id="finalScoreGameOver3D" class="stat-val">0</span>
+            </div>
+          </div>
+          <div class="button-stack">
+            <button id="btnRestartGameOver3D" class="btn-primary" type="button">Coba Lagi</button>
+            <button id="btnMenuGameOver3D" class="btn-secondary" type="button">Menu Utama</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Victory Overlay -->
+      <div id="screenWin3D" class="overlay-screen hidden">
+        <div class="overlay-box">
+          <h2 class="overlay-title win">Misi Selesai!</h2>
+          <p class="overlay-subtitle">Luar biasa! Karakter berhasil mencapai altar tujuan akhir dengan selamat.</p>
+          <div class="stats-card">
+            <div class="stat-row">
+              <span>Total Skor:</span>
+              <span id="finalScoreWin3D" class="stat-val">0</span>
+            </div>
+            <div class="stat-row">
+              <span>Kristal Terkumpul:</span>
+              <span id="crystalsWin3D" class="stat-val">0 / 12</span>
+            </div>
+          </div>
+          <div class="button-stack">
+            <button id="btnNextLevel3D" class="btn-primary" type="button">Lanjut ke Level 2</button>
+            <button id="btnRestartWin3D" class="btn-secondary" type="button">Mainkan Ulang Level Ini</button>
+            <button id="btnMenuWin3D" class="btn-secondary" type="button">Menu Utama</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Touch Controls for 3D -->
+      <div class="touch-controls-3d">
+        <div class="dpad-container">
+          <div></div>
+          <button id="btnDpadUp" class="dpad-btn" type="button" aria-label="Maju">▲</button>
+          <div></div>
+          <button id="btnDpadLeft" class="dpad-btn" type="button" aria-label="Ke Kiri">◀</button>
+          <div></div>
+          <button id="btnDpadRight" class="dpad-btn" type="button" aria-label="Ke Kanan">▶</button>
+          <div></div>
+          <button id="btnDpadDown" class="dpad-btn" type="button" aria-label="Mundur">▼</button>
+          <div></div>
+        </div>
+        <button id="btnTouchActionJump" class="touch-action-btn" type="button" aria-label="Lompat 3D">LOMPAT</button>
+      </div>
+    </div>
+
+    <!-- Bottom Project Description -->
+    <section class="info-section">
+      <div class="info-card">
+        <h2>Spesifikasi LKPD 3D</h2>
+        <ul>
+          <li>Model karakter 3D artikulasi (kepala, topi, badan, tangan, kaki).</li>
+          <li>Animasi gerak dinamis (siklus berjalan, lompat, diam).</li>
+          <li>Kamera 3D orbital chase mengikuti karakter dengan mulus.</li>
+          <li>Pencahayaan matahari dan proyeksi bayangan nyata (*soft shadows*).</li>
+          <li>Minimal 3 rintangan (Jurang hampa, palang duri berputar, drone sentinel).</li>
+          <li>Minimal 5 objek interaktif (Kristal, pegas pelontar, cincin turbo, kristal darah, altar finis).</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h2>Kontrol Permainan 3D</h2>
+        <ul class="instructions-list">
+          <li><span class="key-badge">W</span> atau <span class="key-badge">&uarr;</span> : Bergerak maju</li>
+          <li><span class="key-badge">S</span> atau <span class="key-badge">&darr;</span> : Bergerak mundur</li>
+          <li><span class="key-badge">A</span> atau <span class="key-badge">&larr;</span> : Bergerak ke kiri</li>
+          <li><span class="key-badge">D</span> atau <span class="key-badge">&rarr;</span> : Bergerak ke kanan</li>
+          <li><span class="key-badge">Spasi</span> : Melompat</li>
+          <li><span class="key-badge">Tahan &amp; Geser Mouse</span> : Putar sudut pandang kamera 3D</li>
+          <li><span class="key-badge">P</span> atau <span class="key-badge">Esc</span> : Jeda permainan</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h2>Identitas Ujian Praktik</h2>
+        <p><strong>Mata Pelajaran:</strong> Game Developer</p>
+        <p><strong>Kelas:</strong> XI RPL 1 &amp; 2</p>
+        <p><strong>Guru Pengampu:</strong> Septianto Raharso, S.Kom., M.Pd.</p>
+        <p><strong>Platform:</strong> WebGL 3D (Three.js r128 lokal, mandiri &amp; offline).</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- How to play Modal -->
+  <div id="modalHowToPlay3D" class="overlay-screen hidden">
+    <div class="overlay-box">
+      <h2 class="overlay-title">Panduan Petualangan 3D</h2>
+      <ul class="instructions-list">
+        <li><strong>Eksplorasi:</strong> Kendalikan petualang melintasi pulau terapung dan jembatan batu. Arah pergerakan menyesuaikan sudut kamera Anda saat ini.</li>
+        <li><strong>Rotasi Kamera:</strong> Klik dan seret mouse pada layar permainan untuk memutar kamera 360 derajat.</li>
+        <li><strong>Koleksi &amp; Skor:</strong> Kumpulkan kristal berkilau untuk menambah skor (+100).</li>
+        <li><strong>Objek Interaktif:</strong> Injak pegas pelontar oranye untuk meluncur tinggi ke daratan atas, lewati cincin cyan untuk mempercepat lari karakter, dan ambil kristal merah untuk menambah HP.</li>
+        <li><strong>Waspadai Rintangan:</strong> Hindari terbentur palang duri berputar, jangan sentuh drone penjaga, dan berhati-hatilah agar tidak tergelincir ke jurang!</li>
+      </ul>
+      <button id="btnCloseHowToPlay3D" class="btn-primary" type="button">Saya Siap Bermain</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 SMK Plus Pelita Nusantara Bogor. Proyek Ujian Praktik Pembuatan Game 3D.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/three.min.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

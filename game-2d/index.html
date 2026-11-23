@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petualangan Mengumpulkan Koin - Game 2D Platformer</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1 class="brand-title">Petualangan Mengumpulkan Koin</h1>
+      <span class="school-tag">Ujian Praktik Game Developer 2D &bull; SMK Plus Pelita Nusantara Bogor</span>
+    </div>
+    <div class="nav-controls">
+      <button id="btnToggleSound" class="btn-header" type="button" aria-label="Nyalakan atau matikan suara">🔊 Suara: Nyala</button>
+      <button id="btnHowToPlay" class="btn-header" type="button" aria-label="Buka petunjuk kontrol permainan">📖 Cara Bermain</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="game-container">
+      <canvas id="gameCanvas" width="960" height="540"></canvas>
+
+      <!-- Main Menu Overlay -->
+      <div id="screenMenu" class="overlay-screen">
+        <div class="overlay-box">
+          <h2 class="overlay-title">Petualangan Koin 2D</h2>
+          <p class="overlay-subtitle">Kumpulkan koin emas, lompati rintangan, kalahkan musuh, dan capai garis akhir.</p>
+          <div class="button-stack">
+            <button id="btnStart" class="btn-primary" type="button">Mulai Petualangan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pause Menu Overlay -->
+      <div id="screenPause" class="overlay-screen hidden">
+        <div class="overlay-box">
+          <h2 class="overlay-title">Permainan Dijeda</h2>
+          <p class="overlay-subtitle">Tekan tombol di bawah untuk melanjutkan petualangan.</p>
+          <div class="button-stack">
+            <button id="btnResume" class="btn-primary" type="button">Lanjutkan Permainan</button>
+            <button id="btnRestartPause" class="btn-secondary" type="button">Mulai Ulang Level Ini</button>
+            <button id="btnMenuPause" class="btn-secondary" type="button">Kembali ke Menu Utama</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over Overlay -->
+      <div id="screenGameOver" class="overlay-screen hidden">
+        <div class="overlay-box">
+          <h2 class="overlay-title lose">Permainan Berakhir</h2>
+          <p class="overlay-subtitle">Karakter kehabisan nyawa atau terjatuh ke jurang.</p>
+          <div class="stats-card">
+            <div class="stat-row">
+              <span>Skor Akhir:</span>
+              <span id="finalScoreGameOver" class="stat-val">0</span>
+            </div>
+          </div>
+          <div class="button-stack">
+            <button id="btnRestartGameOver" class="btn-primary" type="button">Coba Lagi</button>
+            <button id="btnMenuGameOver" class="btn-secondary" type="button">Menu Utama</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Victory / Level Complete Overlay -->
+      <div id="screenWin" class="overlay-screen hidden">
+        <div class="overlay-box">
+          <h2 class="overlay-title win">Level Berhasil Diselesaikan!</h2>
+          <p class="overlay-subtitle">Selamat! Anda berhasil mencapai garis akhir dan menyelesaikan misi.</p>
+          <div class="stats-card">
+            <div class="stat-row">
+              <span>Total Skor:</span>
+              <span id="finalScoreWin" class="stat-val">0</span>
+            </div>
+            <div class="stat-row">
+              <span>Koin Terkumpul:</span>
+              <span id="coinsCollectedWin" class="stat-val">0 / 16</span>
+            </div>
+          </div>
+          <div class="button-stack">
+            <button id="btnNextLevel" class="btn-primary" type="button">Lanjut ke Level 2</button>
+            <button id="btnRestartWin" class="btn-secondary" type="button">Mainkan Ulang Level Ini</button>
+            <button id="btnMenuWin" class="btn-secondary" type="button">Menu Utama</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Touch Controls -->
+      <div class="touch-controls">
+        <div class="touch-cluster">
+          <button id="btnTouchLeft" class="touch-btn" type="button" aria-label="Bergerak ke kiri">◀</button>
+          <button id="btnTouchRight" class="touch-btn" type="button" aria-label="Bergerak ke kanan">▶</button>
+        </div>
+        <div class="touch-cluster">
+          <button id="btnTouchJump" class="touch-btn" type="button" aria-label="Lompat">▲</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Project Description -->
+    <section class="info-section">
+      <div class="info-card">
+        <h2>Spesifikasi LKPD 2D</h2>
+        <ul>
+          <li>Karakter utama sprite 2D animasi (idle, lari, lompat, terluka).</li>
+          <li>Latar belakang pemandangan berlapis (parallax scrolling).</li>
+          <li>Minimal 10 koin (Level 1: 16 koin, Level 2: 20 koin).</li>
+          <li>3 jenis rintangan/musuh: Slime patroli, Kelelawar terbang, Duri tajam.</li>
+          <li>Mekanisme injak musuh (stomp) untuk mengalahkan musuh.</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h2>Kontrol Permainan</h2>
+        <ul class="instructions-list">
+          <li><span class="key-badge">A</span> atau <span class="key-badge">&larr;</span> : Bergerak ke kiri</li>
+          <li><span class="key-badge">D</span> atau <span class="key-badge">&rarr;</span> : Bergerak ke kanan</li>
+          <li><span class="key-badge">Spasi</span> atau <span class="key-badge">W</span> : Melompat</li>
+          <li><span class="key-badge">P</span> atau <span class="key-badge">Esc</span> : Jeda permainan</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h2>Identitas Ujian Praktik</h2>
+        <p><strong>Mata Pelajaran:</strong> Game Developer</p>
+        <p><strong>Kelas:</strong> XI RPL 1 &amp; 2</p>
+        <p><strong>Guru Pengampu:</strong> Septianto Raharso, S.Kom., M.Pd.</p>
+        <p><strong>Status:</strong> Siap dimainkan langsung di peramban web offline.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- How to play Modal -->
+  <div id="modalHowToPlay" class="overlay-screen hidden">
+    <div class="overlay-box">
+      <h2 class="overlay-title">Panduan Petualangan</h2>
+      <ul class="instructions-list">
+        <li><strong>Tujuan:</strong> Kumpulkan sebanyak mungkin koin emas dan raih bendera/portal akhir.</li>
+        <li><strong>Injak Musuh:</strong> Melompatlah tepat di atas kepala slime atau musuh untuk mengalahkannya dan raih poin tambahan (+200).</li>
+        <li><strong>Hindari Bahaya:</strong> Jangan menyentuh duri tajam atau tertabrak musuh dari samping karena akan mengurangi nyawa.</li>
+        <li><strong>Objek Interaktif:</strong> Buka peti harta misterius untuk mendapatkan koin bonus, ambil ramuan merah untuk memulihkan nyawa, dan gunakan platform bergerak untuk menyeberangi jurang.</li>
+      </ul>
+      <button id="btnCloseHowToPlay" class="btn-primary" type="button">Mengerti</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 SMK Plus Pelita Nusantara Bogor. Proyek Ujian Praktik Pembuatan Game 2D.</p>
+  </footer>
+
+  <script src="js/audio.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
